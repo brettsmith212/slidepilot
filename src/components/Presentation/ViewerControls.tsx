@@ -1,5 +1,7 @@
 import React from 'react';
 import { ZoomIn, ZoomOut, Maximize } from 'lucide-react';
+import FileOpenButton from './FileOpenButton';
+import { FileInfo } from '../../services/fileService';
 
 interface ViewerControlsProps {
   zoomLevel: number;
@@ -9,6 +11,8 @@ interface ViewerControlsProps {
   onFitToWidth: () => void;
   slideNumber: number;
   totalSlides: number;
+  onFileLoaded?: (fileInfo: FileInfo) => void;
+  onError?: (error: string) => void;
 }
 
 const ViewerControls: React.FC<ViewerControlsProps> = ({
@@ -18,12 +22,16 @@ const ViewerControls: React.FC<ViewerControlsProps> = ({
   onZoomOut,
   onFitToWidth,
   slideNumber,
-  totalSlides
+  totalSlides,
+  onFileLoaded = () => {},
+  onError = () => {}
 }) => {
   return (
     <div className="bg-white border-b border-gray-200 px-4 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
+          <FileOpenButton onFileLoaded={onFileLoaded} onError={onError} />
+          
           <div className="flex items-center gap-2">
             <button
               onClick={onZoomOut}

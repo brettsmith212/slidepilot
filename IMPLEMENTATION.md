@@ -57,7 +57,7 @@
   - **Step Dependencies**: Step 3
   - **User Instructions**: Test component renders correctly with placeholder content
 
-- [ ] Step 6: Add File Opening Functionality
+- [x] Step 6: Add File Opening Functionality
 
   - **Task**: Implement file dialog and file loading for PowerPoint files
   - **Description**: Use Tauri's file dialog to allow users to select and load .ppt/.pptx files

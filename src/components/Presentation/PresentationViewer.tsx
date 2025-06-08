@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import SlideNavigation from './SlideNavigation';
 import ViewerControls from './ViewerControls';
+import FileOpenButton from './FileOpenButton';
+import { FileInfo } from '../../services/fileService';
 
 interface PresentationViewerProps {
   slides?: any[];
   currentSlideIndex?: number;
   onSlideChange?: (index: number) => void;
+  onFileLoaded?: (fileInfo: FileInfo) => void;
+  onError?: (error: string) => void;
 }
 
 const PresentationViewer: React.FC<PresentationViewerProps> = ({
   slides = [],
   currentSlideIndex = 0,
-  onSlideChange = () => {}
+  onSlideChange = () => {},
+  onFileLoaded = () => {},
+  onError = () => {}
 }) => {
   const [zoomLevel, setZoomLevel] = useState(100);
   const [fitToWidth, setFitToWidth] = useState(true);
@@ -55,6 +61,8 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
         onFitToWidth={handleFitToWidth}
         slideNumber={currentSlideIndex + 1}
         totalSlides={slides.length}
+        onFileLoaded={onFileLoaded}
+        onError={onError}
       />
       
       <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
@@ -79,8 +87,9 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <div className="text-center text-gray-500">
-                <p className="text-lg mb-2">No presentation loaded</p>
-                <p className="text-sm">Open a PowerPoint file to get started</p>
+                <p className="text-lg mb-4">No presentation loaded</p>
+                <p className="text-sm mb-6">Open a PowerPoint file to get started</p>
+                <FileOpenButton onFileLoaded={onFileLoaded} onError={onError} />
               </div>
             </div>
           )}

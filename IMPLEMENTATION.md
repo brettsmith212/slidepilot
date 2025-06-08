@@ -1,161 +1,205 @@
-# Implementation Plan - Milestone 1: Basic UI Foundation
+# Implementation Plan - Milestone 2: LibreOffice Integration
 
-## Phase 1: Project Setup and Dependencies
+## Phase 1: LibreOffice Setup and Process Management
 
-- [x] Step 1: Update Dependencies and Add UI Libraries
+- [ ] Step 1: LibreOffice Dependencies and Detection
 
-  - **Task**: Add necessary dependencies for UI components, file handling, and presentation viewing
-  - **Description**: Install React component libraries, file handling utilities, and presentation viewing dependencies to support the main interface
+  - **Task**: Add LibreOffice detection and dependency management to the Tauri backend
+  - **Description**: Establish the foundation for LibreOffice integration by detecting system installations and managing dependencies for headless operation
   - **Files**:
-    - `package.json`: Add dependencies for UI components (@headlessui/react, lucide-react), file handling (file-saver), and styling (tailwindcss)
-    - `src-tauri/Cargo.toml`: Add dependencies for file operations and dialog handling
+    - `src-tauri/Cargo.toml`: Add process management and system detection dependencies
+    - `src-tauri/src/libreoffice/mod.rs`: Create LibreOffice module structure
+    - `src-tauri/src/libreoffice/detection.rs`: System LibreOffice detection and validation
+    - `src-tauri/src/lib.rs`: Import LibreOffice module
   - **Step Dependencies**: None
-  - **User Instructions**: Review dependency choices and approve the UI library selection
+  - **User Instructions**: Ensure LibreOffice is installed on system for testing
 
-- [x] Step 2: Configure Tailwind CSS
-  - **Task**: Set up Tailwind CSS for styling the application
-  - **Description**: Install and configure Tailwind CSS to provide a consistent and responsive design system
+- [ ] Step 2: LibreOffice Process Management
+
+  - **Task**: Implement headless LibreOffice process startup, monitoring, and shutdown
+  - **Description**: Create a robust process management system that can start LibreOffice in headless mode, monitor its health, and handle graceful shutdown
   - **Files**:
-    - `tailwind.config.js`: Create Tailwind configuration
-    - `src/index.css`: Add Tailwind directives and custom styles
-    - `vite.config.ts`: Update Vite config for Tailwind
+    - `src-tauri/src/libreoffice/process.rs`: Process lifecycle management
+    - `src-tauri/src/libreoffice/config.rs`: LibreOffice configuration and startup parameters
+    - `src-tauri/src/libreoffice/health.rs`: Process health monitoring and recovery
   - **Step Dependencies**: Step 1
-  - **User Instructions**: Test that Tailwind classes work correctly in the dev environment
+  - **User Instructions**: Test process startup and shutdown in different scenarios
 
-## Phase 2: Core Layout Structure
+- [ ] Step 3: Error Handling and Logging
 
-- [x] Step 3: Create Main Application Layout
-
-  - **Task**: Build the core application layout with header, main content area, and sidebar
-  - **Description**: Establish the fundamental layout structure that will house the presentation viewer and AI chat interface
+  - **Task**: Implement comprehensive error handling and logging for LibreOffice operations
+  - **Description**: Create robust error handling to manage LibreOffice crashes, communication failures, and operational errors
   - **Files**:
-    - `src/App.tsx`: Replace default app with main layout structure
-    - `src/components/Layout/MainLayout.tsx`: Create main layout component with header, content, and sidebar areas
-    - `src/components/Layout/Header.tsx`: Create header with app branding and menu options
+    - `src-tauri/src/libreoffice/errors.rs`: LibreOffice-specific error types and handling
+    - `src-tauri/src/libreoffice/logger.rs`: Logging system for LibreOffice operations
+    - `src-tauri/src/utils/error_handler.rs`: Global error handling utilities
   - **Step Dependencies**: Step 2
-  - **User Instructions**: Verify layout renders correctly and is responsive
+  - **User Instructions**: Verify error messages are clear and actionable
 
-- [x] Step 4: Implement Sidebar Toggle and Responsive Design
-  - **Task**: Add sidebar visibility controls and ensure responsive behavior
-  - **Description**: Allow users to show/hide the AI chat sidebar and ensure the layout adapts properly to different screen sizes
+## Phase 2: Communication Bridge
+
+- [ ] Step 4: UNO Bridge Setup
+
+  - **Task**: Establish UNO (Universal Network Objects) bridge for LibreOffice communication
+  - **Description**: Set up the primary communication channel between Rust and LibreOffice using UNO protocol for API access
   - **Files**:
-    - `src/components/Layout/MainLayout.tsx`: Add sidebar toggle state and responsive classes
-    - `src/hooks/useLocalStorage.ts`: Create hook for persisting sidebar state
+    - `src-tauri/src/libreoffice/uno_bridge.rs`: UNO connection and communication setup
+    - `src-tauri/src/libreoffice/connection.rs`: Connection management and reconnection logic
+    - `src-tauri/Cargo.toml`: Add UNO and networking dependencies
   - **Step Dependencies**: Step 3
-  - **User Instructions**: Test sidebar toggle functionality on various screen sizes
+  - **User Instructions**: Test connection establishment and basic communication
 
-## Phase 3: Presentation Viewer Component
+- [ ] Step 5: Document Service Interface
 
-- [x] Step 5: Create Basic Presentation Viewer
-
-  - **Task**: Build a presentation viewer component that can display slides
-  - **Description**: Create the main component for viewing presentation slides with navigation controls and zoom functionality
+  - **Task**: Create Rust interface for LibreOffice document services
+  - **Description**: Build the core interface for accessing LibreOffice's presentation document services and basic operations
   - **Files**:
-    - `src/components/Presentation/PresentationViewer.tsx`: Main viewer component with slide display area
-    - `src/components/Presentation/SlideNavigation.tsx`: Navigation controls (previous, next, slide thumbnails)
-    - `src/components/Presentation/ViewerControls.tsx`: Zoom, fit-to-width, and other view controls
-  - **Step Dependencies**: Step 3
-  - **User Instructions**: Test component renders correctly with placeholder content
-
-- [x] Step 6: Add File Opening Functionality
-
-  - **Task**: Implement file dialog and file loading for PowerPoint files
-  - **Description**: Use Tauri's file dialog to allow users to select and load .ppt/.pptx files
-  - **Files**:
-    - `src-tauri/src/lib.rs`: Add Tauri command for opening file dialog
-    - `src/services/fileService.ts`: Create service for handling file operations
-    - `src/components/Presentation/FileOpenButton.tsx`: UI component for triggering file open
-    - `src-tauri/Cargo.toml`: Add tauri-plugin-dialog dependency
-  - **Step Dependencies**: Step 5
-  - **User Instructions**: Test file dialog opens and files can be selected (files won't display yet)
-
-- [x] Step 7: Implement Basic Slide Rendering
-  - **Task**: Create slide rendering system for displaying presentation content
-  - **Description**: Build a system to display slide content, starting with basic text and image rendering as placeholders
-  - **Files**:
-    - `src/components/Presentation/SlideRenderer.tsx`: Component for rendering individual slides
-    - `src/types/presentation.ts`: TypeScript interfaces for presentation data structures
-    - `src/utils/slideParser.ts`: Utility functions for processing slide content
-  - **Step Dependencies**: Step 6
-  - **User Instructions**: Verify slides display correctly with test data
-
-## Phase 4: AI Chat Interface
-
-- [x] Step 8: Create Chat Interface Components
-
-  - **Task**: Build the AI chat interface in the sidebar
-  - **Description**: Create a chat-like interface where users will interact with the AI agent, including message history and input field
-  - **Files**:
-    - `src/components/Chat/ChatInterface.tsx`: Main chat interface component
-    - `src/components/Chat/MessageList.tsx`: Component for displaying chat messages
-    - `src/components/Chat/MessageInput.tsx`: Input field for typing messages
-    - `src/components/Chat/Message.tsx`: Individual message component
+    - `src-tauri/src/libreoffice/document_service.rs`: Document service wrapper and interface
+    - `src-tauri/src/libreoffice/presentation.rs`: Presentation-specific document operations
+    - `src-tauri/src/types/libreoffice_types.rs`: Type definitions for LibreOffice objects
   - **Step Dependencies**: Step 4
-  - **User Instructions**: Test chat interface layout and message display
+  - **User Instructions**: Verify document can be opened and basic properties accessed
 
-- [x] Step 9: Add Mock AI Responses
-  - **Task**: Implement mock AI responses to simulate the chat experience
-  - **Description**: Create a mock response system that simulates AI interactions for testing the UI flow
+- [ ] Step 6: Presentation Loading and Parsing
+
+  - **Task**: Implement presentation file loading and content parsing through LibreOffice
+  - **Description**: Replace the mock slide parser with real LibreOffice-based presentation parsing to extract actual slide content
   - **Files**:
-    - `src/services/mockAI.ts`: Mock AI service with predefined responses
-    - `src/hooks/useChat.ts`: Custom hook for managing chat state and interactions
-    - `src/types/chat.ts`: TypeScript interfaces for chat messages and state
+    - `src-tauri/src/libreoffice/presentation_parser.rs`: Real presentation parsing using LibreOffice
+    - `src-tauri/src/commands/presentation_commands.rs`: Tauri commands for presentation operations
+    - `src/utils/slideParser.ts`: Update to use real LibreOffice data instead of mock data
+    - `src/types/presentation.ts`: Extend types to support LibreOffice presentation structures
+  - **Step Dependencies**: Step 5
+  - **User Instructions**: Test with various .ppt and .pptx files to ensure parsing works
+
+## Phase 3: Core Presentation APIs
+
+- [ ] Step 7: Slide Management Operations
+
+  - **Task**: Implement core slide creation, deletion, and duplication APIs
+  - **Description**: Build the fundamental slide management operations that will be used by the AI agent and manual editing features
+  - **Files**:
+    - `src-tauri/src/libreoffice/slide_operations.rs`: Slide CRUD operations
+    - `src-tauri/src/commands/slide_commands.rs`: Tauri commands for slide management
+    - `src/services/slideService.ts`: Frontend service for slide operations
+  - **Step Dependencies**: Step 6
+  - **User Instructions**: Test slide creation, deletion, and duplication through the UI
+
+- [ ] Step 8: Text Content Manipulation
+
+  - **Task**: Implement text editing operations for slide content
+  - **Description**: Create APIs for adding, editing, and formatting text content within slides, including text boxes and bullet points
+  - **Files**:
+    - `src-tauri/src/libreoffice/text_operations.rs`: Text manipulation and formatting
+    - `src-tauri/src/commands/text_commands.rs`: Tauri commands for text operations
+    - `src/services/textService.ts`: Frontend service for text editing
+    - `src/types/text_formatting.ts`: Type definitions for text formatting options
+  - **Step Dependencies**: Step 7
+  - **User Instructions**: Test text editing, formatting, and positioning features
+
+- [ ] Step 9: Media and Shape Operations
+
+  - **Task**: Implement image insertion and basic shape creation APIs
+  - **Description**: Build functionality for inserting images and creating basic shapes within presentations
+  - **Files**:
+    - `src-tauri/src/libreoffice/media_operations.rs`: Image and media insertion operations
+    - `src-tauri/src/libreoffice/shape_operations.rs`: Shape creation and manipulation
+    - `src-tauri/src/commands/media_commands.rs`: Tauri commands for media operations
+    - `src/services/mediaService.ts`: Frontend service for media and shapes
   - **Step Dependencies**: Step 8
-  - **User Instructions**: Test chat functionality with mock responses
+  - **User Instructions**: Test image insertion and basic shape creation
 
-## Phase 5: Integration and Polish
+## Phase 4: Advanced Operations and File Management
 
-- [x] Step 10: Connect Presentation Viewer with File Loading (Combined with Steps 8-9)
+- [ ] Step 10: Save and Export Functionality
 
-  - **Task**: Integrate file loading with the presentation viewer to display loaded files
-  - **Description**: Complete the connection between file opening and presentation display, handling loading states and errors
+  - **Task**: Implement presentation save and export operations
+  - **Description**: Create robust save and export functionality supporting various formats and handling file operations safely
   - **Files**:
-    - `src/App.tsx`: Connect file loading state with presentation viewer
-    - `src/components/Presentation/LoadingState.tsx`: Loading indicator component
-    - `src/components/Presentation/ErrorState.tsx`: Error display component
-  - **Step Dependencies**: Step 7, Step 6
-  - **User Instructions**: Test complete file opening workflow
+    - `src-tauri/src/libreoffice/file_operations.rs`: Save, export, and file management
+    - `src-tauri/src/commands/file_commands.rs`: Tauri commands for file operations
+    - `src/services/fileService.ts`: Update frontend file service with save/export features
+  - **Step Dependencies**: Step 9
+  - **User Instructions**: Test saving presentations and exporting to different formats
 
-- [x] Step 11: Add Keyboard Shortcuts and Accessibility
+- [ ] Step 11: Transitions and Animations
 
-  - **Task**: Implement keyboard navigation and accessibility features
-  - **Description**: Add keyboard shortcuts for common actions and ensure the application is accessible
+  - **Task**: Implement basic transition and animation APIs
+  - **Description**: Add support for slide transitions and basic animations to enhance presentation capabilities
   - **Files**:
-    - `src/hooks/useKeyboardShortcuts.ts`: Hook for managing keyboard shortcuts
-    - `src/components/Presentation/PresentationViewer.tsx`: Add keyboard event handlers
-    - `src/utils/accessibility.ts`: Accessibility helper functions
+    - `src-tauri/src/libreoffice/animation_operations.rs`: Transition and animation operations
+    - `src-tauri/src/commands/animation_commands.rs`: Tauri commands for animations
+    - `src/services/animationService.ts`: Frontend service for animations and transitions
   - **Step Dependencies**: Step 10
-  - **User Instructions**: Test keyboard navigation and screen reader compatibility
+  - **User Instructions**: Test applying transitions and basic animations to slides
 
-- [x] Step 12: Style Polish and Responsive Testing
-  - **Task**: Final styling improvements and comprehensive responsive testing
-  - **Description**: Polish the visual design, ensure consistent styling, and test on various screen sizes
+- [ ] Step 12: Batch Operations and Performance Optimization
+
+  - **Task**: Implement batch operations and optimize LibreOffice communication performance
+  - **Description**: Create efficient batch operations for multiple changes and optimize the communication bridge for better performance
   - **Files**:
-    - `src/styles/components.css`: Component-specific styles
-    - `src/components/Layout/MainLayout.tsx`: Final responsive adjustments
-    - `src/App.css`: Global style updates
+    - `src-tauri/src/libreoffice/batch_operations.rs`: Batch operation handling and optimization
+    - `src-tauri/src/libreoffice/performance.rs`: Performance monitoring and optimization
+    - `src-tauri/src/commands/batch_commands.rs`: Tauri commands for batch operations
   - **Step Dependencies**: Step 11
-  - **User Instructions**: Comprehensive testing on different devices and screen sizes
+  - **User Instructions**: Test batch operations with multiple slides and complex changes
 
-## Definition of Done for Milestone 1 ✅ COMPLETED
+## Phase 5: Integration and Testing
 
-- ✅ Users can open PowerPoint files through a file dialog
-- ✅ Presentation slides are displayed in the main viewer area
-- ✅ Users can navigate between slides using controls
-- ✅ Sidebar AI chat interface is fully functional (with mock responses)
-- ✅ Layout is responsive and works on desktop and tablet sizes
-- ✅ Basic keyboard navigation is implemented
-- ✅ Error states are handled gracefully
-- ✅ Application has a polished, professional appearance
+- [ ] Step 13: Frontend Integration and Real-time Updates
 
-## Testing Checklist ✅ COMPLETED
+  - **Task**: Integrate LibreOffice operations with the frontend presentation viewer
+  - **Description**: Connect the LibreOffice backend with the React frontend to provide real-time updates and seamless user experience
+  - **Files**:
+    - `src/components/Presentation/PresentationViewer.tsx`: Update to use real LibreOffice data
+    - `src/components/Presentation/SlideRenderer.tsx`: Enhance to render LibreOffice content accurately
+    - `src/hooks/usePresentation.ts`: Custom hook for managing presentation state with LibreOffice
+    - `src/services/presentationService.ts`: Comprehensive service for all presentation operations
+  - **Step Dependencies**: Step 12
+  - **User Instructions**: Test complete workflow from file opening to editing and saving
 
-- ✅ File opening dialog works correctly
-- ✅ Slides display without errors
-- ✅ Navigation between slides is smooth
-- ✅ Chat interface accepts input and shows mock responses
-- ✅ Sidebar can be toggled on/off
-- ✅ Layout responds correctly to window resizing
-- ✅ Keyboard shortcuts work as expected
-- ✅ Error messages display appropriately for invalid files
-- ✅ Performance is smooth during normal usage
+- [ ] Step 14: Comprehensive Error Handling and Recovery
+
+  - **Task**: Implement comprehensive error handling and recovery mechanisms
+  - **Description**: Ensure robust error handling throughout the LibreOffice integration with proper user feedback and recovery options
+  - **Files**:
+    - `src-tauri/src/libreoffice/recovery.rs`: Error recovery and fallback mechanisms
+    - `src/components/Error/LibreOfficeErrorBoundary.tsx`: React error boundary for LibreOffice errors
+    - `src/utils/errorRecovery.ts`: Frontend error recovery utilities
+  - **Step Dependencies**: Step 13
+  - **User Instructions**: Test error scenarios and recovery mechanisms
+
+- [ ] Step 15: Testing Suite and Documentation
+
+  - **Task**: Create comprehensive test suite for LibreOffice integration
+  - **Description**: Implement unit tests, integration tests, and documentation for all LibreOffice functionality
+  - **Files**:
+    - `src-tauri/tests/libreoffice_tests.rs`: Rust tests for LibreOffice integration
+    - `src/tests/presentation.test.tsx`: Frontend tests for presentation functionality
+    - `tests/integration/libreoffice_integration.test.ts`: End-to-end integration tests
+    - `docs/LIBREOFFICE_INTEGRATION.md`: Documentation for LibreOffice integration
+  - **Step Dependencies**: Step 14
+  - **User Instructions**: Run complete test suite and verify all functionality works as expected
+
+## Definition of Done for Milestone 2
+
+- [ ] LibreOffice headless process can be started and managed reliably
+- [ ] Presentation files can be loaded and parsed to display actual content
+- [ ] All core editing operations (create/delete slides, edit text, insert media) work correctly
+- [ ] Save and export functionality preserves presentation integrity
+- [ ] Error handling gracefully manages LibreOffice issues and provides user feedback
+- [ ] Performance is acceptable for typical presentation editing workflows
+- [ ] Comprehensive test coverage ensures reliability
+
+## Testing Checklist
+
+- [ ] LibreOffice process starts and stops cleanly
+- [ ] Various .ppt and .pptx files load correctly
+- [ ] Slide creation, deletion, and duplication work reliably
+- [ ] Text editing preserves formatting and positioning
+- [ ] Image insertion maintains quality and positioning
+- [ ] Save operations preserve all presentation elements
+- [ ] Export to different formats works correctly
+- [ ] Error scenarios are handled gracefully
+- [ ] Performance is smooth during normal editing operations
+- [ ] Memory usage remains reasonable during extended sessions

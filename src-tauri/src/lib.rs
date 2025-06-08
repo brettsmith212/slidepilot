@@ -8,15 +8,21 @@ fn greet(name: &str) -> String {
 
 #[tauri::command]
 async fn open_file_dialog(app: tauri::AppHandle) -> Result<Option<String>, String> {
-    let file_path = app
-        .dialog()
+    use std::sync::mpsc;
+    
+    let (tx, rx) = mpsc::channel();
+    
+    app.dialog()
         .file()
         .add_filter("PowerPoint Files", &["ppt", "pptx"])
-        .pick_file()
-        .await;
+        .pick_file(move |file_path| {
+            let _ = tx.send(file_path);
+        });
+    
+    let file_path = rx.recv().map_err(|e| format!("Failed to receive file path: {}", e))?;
     
     match file_path {
-        Some(path) => Ok(Some(path.to_string_lossy().to_string())),
+        Some(path) => Ok(Some(path.to_string())),
         None => Ok(None),
     }
 }

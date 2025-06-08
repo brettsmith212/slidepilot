@@ -2,6 +2,7 @@ import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import MainLayout from "./components/Layout/MainLayout";
 import PresentationViewer from "./components/Presentation/PresentationViewer";
+import ChatInterface from "./components/Chat/ChatInterface";
 import { FileInfo } from "./services/fileService";
 import { Slide, Presentation } from "./types/presentation";
 import { SlideParser } from "./utils/slideParser";
@@ -11,6 +12,7 @@ function App() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [loadedFile, setLoadedFile] = useState<FileInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isAITyping, setIsAITyping] = useState(false);
 
   // Mock data for testing
   const createMockSlides = (): Slide[] => [
@@ -135,6 +137,18 @@ function App() {
     setLoadedFile(null);
   };
 
+  const handleChatMessage = (message: string) => {
+    // For now, just simulate AI thinking and responding
+    setIsAITyping(true);
+    
+    // Simulate AI processing time
+    setTimeout(() => {
+      setIsAITyping(false);
+      // In Step 9, we'll implement actual AI responses
+      console.log('User message:', message);
+    }, 1000 + Math.random() * 2000);
+  };
+
   const currentSlides = presentation?.slides || createMockSlides();
 
   const mainContent = (
@@ -148,29 +162,34 @@ function App() {
   );
 
   const sidebarContent = (
-    <div className="p-4">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">AI Assistant</h3>
-      
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800 text-sm">{error}</p>
+    <div className="flex flex-col h-full">
+      {(error || (loadedFile && presentation)) && (
+        <div className="flex-shrink-0 p-4 border-b border-gray-200">
+          {error && (
+            <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-800 text-sm">{error}</p>
+            </div>
+          )}
+          
+          {loadedFile && presentation && (
+            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-green-800 text-sm">
+                <strong>Loaded:</strong> {loadedFile.name}
+              </p>
+              <p className="text-green-700 text-xs mt-1">
+                {presentation.slides.length} slides parsed
+              </p>
+            </div>
+          )}
         </div>
       )}
       
-      {loadedFile && presentation && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-green-800 text-sm">
-            <strong>Loaded:</strong> {loadedFile.name}
-          </p>
-          <p className="text-green-700 text-xs mt-1">
-            {presentation.slides.length} slides parsed
-          </p>
-        </div>
-      )}
-      
-      <p className="text-gray-600 text-sm">
-        Chat interface will be implemented in the next steps
-      </p>
+      <div className="flex-1 min-h-0">
+        <ChatInterface 
+          onSendMessage={handleChatMessage}
+          isTyping={isAITyping}
+        />
+      </div>
     </div>
   );
 

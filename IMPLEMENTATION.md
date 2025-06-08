@@ -24,7 +24,7 @@
 
 ## Phase 2: Core Layout Structure
 
-- [ ] Step 3: Create Main Application Layout
+- [x] Step 3: Create Main Application Layout
 
   - **Task**: Build the core application layout with header, main content area, and sidebar
   - **Description**: Establish the fundamental layout structure that will house the presentation viewer and AI chat interface
@@ -35,7 +35,7 @@
   - **Step Dependencies**: Step 2
   - **User Instructions**: Verify layout renders correctly and is responsive
 
-- [ ] Step 4: Implement Sidebar Toggle and Responsive Design
+- [x] Step 4: Implement Sidebar Toggle and Responsive Design
   - **Task**: Add sidebar visibility controls and ensure responsive behavior
   - **Description**: Allow users to show/hide the AI chat sidebar and ensure the layout adapts properly to different screen sizes
   - **Files**:
@@ -46,7 +46,7 @@
 
 ## Phase 3: Presentation Viewer Component
 
-- [ ] Step 5: Create Basic Presentation Viewer
+- [x] Step 5: Create Basic Presentation Viewer
 
   - **Task**: Build a presentation viewer component that can display slides
   - **Description**: Create the main component for viewing presentation slides with navigation controls and zoom functionality

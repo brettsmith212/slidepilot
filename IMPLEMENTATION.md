@@ -1,7 +1,9 @@
 # Implementation Plan - Milestone 1: Basic UI Foundation
 
 ## Phase 1: Project Setup and Dependencies
-- [ ] Step 1: Update Dependencies and Add UI Libraries
+
+- [x] Step 1: Update Dependencies and Add UI Libraries
+
   - **Task**: Add necessary dependencies for UI components, file handling, and presentation viewing
   - **Description**: Install React component libraries, file handling utilities, and presentation viewing dependencies to support the main interface
   - **Files**:
@@ -10,7 +12,7 @@
   - **Step Dependencies**: None
   - **User Instructions**: Review dependency choices and approve the UI library selection
 
-- [ ] Step 2: Configure Tailwind CSS
+- [x] Step 2: Configure Tailwind CSS
   - **Task**: Set up Tailwind CSS for styling the application
   - **Description**: Install and configure Tailwind CSS to provide a consistent and responsive design system
   - **Files**:
@@ -21,7 +23,9 @@
   - **User Instructions**: Test that Tailwind classes work correctly in the dev environment
 
 ## Phase 2: Core Layout Structure
+
 - [ ] Step 3: Create Main Application Layout
+
   - **Task**: Build the core application layout with header, main content area, and sidebar
   - **Description**: Establish the fundamental layout structure that will house the presentation viewer and AI chat interface
   - **Files**:
@@ -41,7 +45,9 @@
   - **User Instructions**: Test sidebar toggle functionality on various screen sizes
 
 ## Phase 3: Presentation Viewer Component
+
 - [ ] Step 5: Create Basic Presentation Viewer
+
   - **Task**: Build a presentation viewer component that can display slides
   - **Description**: Create the main component for viewing presentation slides with navigation controls and zoom functionality
   - **Files**:
@@ -52,6 +58,7 @@
   - **User Instructions**: Test component renders correctly with placeholder content
 
 - [ ] Step 6: Add File Opening Functionality
+
   - **Task**: Implement file dialog and file loading for PowerPoint files
   - **Description**: Use Tauri's file dialog to allow users to select and load .ppt/.pptx files
   - **Files**:
@@ -73,7 +80,9 @@
   - **User Instructions**: Verify slides display correctly with test data
 
 ## Phase 4: AI Chat Interface
+
 - [ ] Step 8: Create Chat Interface Components
+
   - **Task**: Build the AI chat interface in the sidebar
   - **Description**: Create a chat-like interface where users will interact with the AI agent, including message history and input field
   - **Files**:
@@ -95,7 +104,9 @@
   - **User Instructions**: Test chat functionality with mock responses
 
 ## Phase 5: Integration and Polish
+
 - [ ] Step 10: Connect Presentation Viewer with File Loading
+
   - **Task**: Integrate file loading with the presentation viewer to display loaded files
   - **Description**: Complete the connection between file opening and presentation display, handling loading states and errors
   - **Files**:
@@ -106,6 +117,7 @@
   - **User Instructions**: Test complete file opening workflow
 
 - [ ] Step 11: Add Keyboard Shortcuts and Accessibility
+
   - **Task**: Implement keyboard navigation and accessibility features
   - **Description**: Add keyboard shortcuts for common actions and ensure the application is accessible
   - **Files**:

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import { ChatMessage, ChatState } from '../../types/chat';
@@ -9,11 +9,16 @@ interface ChatInterfaceProps {
   className?: string;
 }
 
-const ChatInterface: React.FC<ChatInterfaceProps> = ({
+export interface ChatInterfaceRef {
+  addMessage: (message: ChatMessage) => void;
+  clearMessages: () => void;
+}
+
+const ChatInterface = forwardRef<ChatInterfaceRef, ChatInterfaceProps>(({
   onSendMessage,
   isTyping = false,
   className = ''
-}) => {
+}, ref) => {
   const [chatState, setChatState] = useState<ChatState>({
     messages: [
       {
@@ -68,26 +73,26 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     onSendMessage(content);
   };
 
-  const addAIMessage = (content: string, type: ChatMessage['type'] = 'text') => {
-    const aiMessage: ChatMessage = {
-      id: `ai-${Date.now()}`,
-      content,
-      sender: 'ai',
-      timestamp: new Date(),
-      type
-    };
-
+  const addMessage = (message: ChatMessage) => {
     setChatState(prev => ({
       ...prev,
-      messages: [...prev.messages, aiMessage],
-      isTyping: false,
+      messages: [...prev.messages, message],
       lastActivity: new Date()
     }));
   };
 
-  // Expose method to add AI messages (will be used by parent component)
-  React.useImperativeHandle(React.createRef(), () => ({
-    addAIMessage
+  const clearMessages = () => {
+    setChatState(prev => ({
+      ...prev,
+      messages: [],
+      lastActivity: new Date()
+    }));
+  };
+
+  // Expose methods to parent component
+  useImperativeHandle(ref, () => ({
+    addMessage,
+    clearMessages
   }));
 
   return (
@@ -121,6 +126,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       </div>
     </div>
   );
-};
+});
+
+ChatInterface.displayName = 'ChatInterface';
 
 export default ChatInterface;

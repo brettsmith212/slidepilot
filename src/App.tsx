@@ -1,20 +1,21 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import MainLayout from "./components/Layout/MainLayout";
 import PresentationViewer from "./components/Presentation/PresentationViewer";
-import ChatInterface from "./components/Chat/ChatInterface";
+import ChatInterface, { ChatInterfaceRef } from "./components/Chat/ChatInterface";
 import { FileInfo } from "./services/fileService";
 import { Slide, Presentation } from "./types/presentation";
 import { SlideParser } from "./utils/slideParser";
+import { useChat } from "./hooks/useChat";
 
 function App() {
   const [presentation, setPresentation] = useState<Presentation | null>(null);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [loadedFile, setLoadedFile] = useState<FileInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isAITyping, setIsAITyping] = useState(false);
+  const chatInterfaceRef = useRef<ChatInterfaceRef>(null);
 
-  // Mock data for testing
+  // Mock data for testing - moved up before usage
   const createMockSlides = (): Slide[] => [
     {
       id: 'mock-1',
@@ -108,6 +109,29 @@ function App() {
     }
   ];
 
+  // Get current slides before using in chat hook
+  const currentSlides = presentation?.slides || createMockSlides();
+
+  const { chatState, actions, addSystemMessage } = useChat({
+    onNavigateToSlide: (slideIndex: number) => {
+      if (slideIndex >= 0 && slideIndex < currentSlides.length) {
+        setCurrentSlideIndex(slideIndex);
+        addSystemMessage(`Navigated to slide ${slideIndex + 1}`);
+      }
+    },
+    onEditSlide: (slideIndex: number, elementId: string, changes: any) => {
+      addSystemMessage(`Applied edit to ${elementId} on slide ${slideIndex + 1}`);
+      // In a real implementation, this would update the slide data
+    },
+    onFormatSlide: (slideIndex: number, elementId: string, changes: any) => {
+      addSystemMessage(`Applied formatting changes to slide ${slideIndex + 1}`);
+      // In a real implementation, this would update the slide formatting
+    },
+    currentSlideIndex,
+    totalSlides: currentSlides.length,
+    hasPresentation: !!presentation
+  });
+
   const handleSlideChange = (index: number) => {
     setCurrentSlideIndex(index);
   };
@@ -136,20 +160,6 @@ function App() {
     setError(errorMessage);
     setLoadedFile(null);
   };
-
-  const handleChatMessage = (message: string) => {
-    // For now, just simulate AI thinking and responding
-    setIsAITyping(true);
-    
-    // Simulate AI processing time
-    setTimeout(() => {
-      setIsAITyping(false);
-      // In Step 9, we'll implement actual AI responses
-      console.log('User message:', message);
-    }, 1000 + Math.random() * 2000);
-  };
-
-  const currentSlides = presentation?.slides || createMockSlides();
 
   const mainContent = (
     <PresentationViewer
@@ -185,10 +195,122 @@ function App() {
       )}
       
       <div className="flex-1 min-h-0">
-        <ChatInterface 
-          onSendMessage={handleChatMessage}
-          isTyping={isAITyping}
-        />
+        <div className="flex flex-col h-full bg-white">
+          <div className="flex-shrink-0 px-4 py-3 border-b border-gray-200 bg-gray-50">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900">AI Assistant</h3>
+                <p className="text-xs text-gray-600">
+                  {chatState.isConnected ? 'Online' : 'Offline'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex-1 flex flex-col min-h-0">
+            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+              {chatState.messages.map((message) => (
+                <div key={message.id} className="flex gap-3">
+                  <div className="flex-shrink-0 mt-1">
+                    {message.sender === 'user' ? (
+                      <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
+                        <span className="text-xs">U</span>
+                      </div>
+                    ) : (
+                      <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                        <span className="text-xs text-white">AI</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className={`inline-block max-w-full p-3 rounded-lg border ${
+                      message.type === 'error' ? 'bg-red-50 border-red-200' :
+                      message.type === 'system' ? 'bg-blue-50 border-blue-200' :
+                      message.sender === 'user' ? 'bg-gray-100 border-gray-200' :
+                      'bg-white border-gray-200'
+                    }`}>
+                      <div className={`text-sm whitespace-pre-wrap ${
+                        message.type === 'error' ? 'text-red-800' :
+                        message.type === 'system' ? 'text-blue-800' :
+                        'text-gray-800'
+                      }`}>
+                        {message.content}
+                      </div>
+                    </div>
+                    
+                    <div className="mt-1 text-xs text-gray-500">
+                      {message.timestamp.toLocaleTimeString([], { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                      })}
+                      {message.metadata?.commandType && (
+                        <span className="ml-2 px-2 py-0.5 bg-gray-200 rounded text-xs">
+                          {message.metadata.commandType}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              {chatState.isTyping && (
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-xs text-white">AI</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1">
+                    <div className="inline-block p-3 rounded-lg border bg-white border-gray-200">
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm text-gray-600">AI is typing</span>
+                        <div className="flex gap-1 ml-2">
+                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex-shrink-0 border-t border-gray-200 p-4">
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target as HTMLFormElement);
+              const message = formData.get('message') as string;
+              if (message.trim()) {
+                actions.sendMessage(message.trim());
+                (e.target as HTMLFormElement).reset();
+              }
+            }} className="flex gap-2">
+              <input
+                name="message"
+                type="text"
+                placeholder="Ask me to edit slides, navigate, or analyze your presentation..."
+                disabled={!chatState.isConnected}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+              <button
+                type="submit"
+                disabled={!chatState.isConnected}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              >
+                Send
+              </button>
+            </form>
+            
+            <div className="mt-2 text-xs text-gray-500">
+              Try: "Edit the title", "Go to slide 2", "Make the text larger"
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

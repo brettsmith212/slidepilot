@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import SlideNavigation from './SlideNavigation';
 import ViewerControls from './ViewerControls';
 import FileOpenButton from './FileOpenButton';
+import SlideRenderer from './SlideRenderer';
 import { FileInfo } from '../../services/fileService';
+import { Slide } from '../../types/presentation';
 
 interface PresentationViewerProps {
-  slides?: any[];
+  slides?: Slide[];
   currentSlideIndex?: number;
   onSlideChange?: (index: number) => void;
   onFileLoaded?: (fileInfo: FileInfo) => void;
@@ -66,34 +68,29 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
       />
       
       <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
-        <div 
-          className="bg-white shadow-lg rounded-lg border border-gray-200 aspect-[4/3] max-w-full max-h-full"
-          style={{
-            transform: `scale(${fitToWidth ? 1 : zoomLevel / 100})`,
-            transformOrigin: 'center center'
-          }}
-        >
-          {currentSlide ? (
-            <div className="w-full h-full flex items-center justify-center p-8">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  {currentSlide.title || `Slide ${currentSlideIndex + 1}`}
-                </h2>
-                <p className="text-gray-600">
-                  {currentSlide.content || 'Slide content will be rendered here'}
-                </p>
-              </div>
+        {currentSlide ? (
+          <div 
+            className="shadow-lg rounded-lg overflow-hidden"
+            style={{
+              transform: `scale(${fitToWidth ? 1 : zoomLevel / 100})`,
+              transformOrigin: 'center center'
+            }}
+          >
+            <SlideRenderer 
+              slide={currentSlide}
+              width={800}
+              height={600}
+            />
+          </div>
+        ) : (
+          <div className="bg-white shadow-lg rounded-lg border border-gray-200 aspect-[4/3] max-w-full max-h-full flex items-center justify-center">
+            <div className="text-center text-gray-500">
+              <p className="text-lg mb-4">No presentation loaded</p>
+              <p className="text-sm mb-6">Open a PowerPoint file to get started</p>
+              <FileOpenButton onFileLoaded={onFileLoaded} onError={onError} />
             </div>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="text-center text-gray-500">
-                <p className="text-lg mb-4">No presentation loaded</p>
-                <p className="text-sm mb-6">Open a PowerPoint file to get started</p>
-                <FileOpenButton onFileLoaded={onFileLoaded} onError={onError} />
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
       
       <SlideNavigation

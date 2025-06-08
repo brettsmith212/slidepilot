@@ -1,8 +1,9 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Slide } from '../../types/presentation';
 
 interface SlideNavigationProps {
-  slides: any[];
+  slides: Slide[];
   currentSlideIndex: number;
   onSlideChange: (index: number) => void;
   onPrevious: () => void;

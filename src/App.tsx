@@ -3,37 +3,131 @@ import { invoke } from "@tauri-apps/api/core";
 import MainLayout from "./components/Layout/MainLayout";
 import PresentationViewer from "./components/Presentation/PresentationViewer";
 import { FileInfo } from "./services/fileService";
+import { Slide, Presentation } from "./types/presentation";
+import { SlideParser } from "./utils/slideParser";
 
 function App() {
-  const [slides, setSlides] = useState<any[]>([]);
+  const [presentation, setPresentation] = useState<Presentation | null>(null);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [loadedFile, setLoadedFile] = useState<FileInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Mock data for testing
-  const mockSlides = [
-    { title: "Welcome to SlidePilot", content: "Your AI-powered presentation editor" },
-    { title: "Getting Started", content: "Load a PowerPoint file to begin editing" },
-    { title: "AI Assistant", content: "Use the sidebar to interact with your AI assistant" }
+  const createMockSlides = (): Slide[] => [
+    {
+      id: 'mock-1',
+      title: "Welcome to SlidePilot",
+      elements: [
+        {
+          id: 'elem-1',
+          type: 'text',
+          x: 50,
+          y: 50,
+          width: 700,
+          height: 100,
+          content: "Welcome to SlidePilot",
+          style: { fontSize: 32, fontFamily: 'Arial', color: '#333', textAlign: 'center', fontWeight: 'bold' }
+        },
+        {
+          id: 'elem-2',
+          type: 'text',
+          x: 50,
+          y: 200,
+          width: 700,
+          height: 200,
+          content: "Your AI-powered presentation editor\n\nClick 'Open Presentation' to load a PowerPoint file and see the slide parsing in action.",
+          style: { fontSize: 18, fontFamily: 'Arial', color: '#666', textAlign: 'center' }
+        }
+      ],
+      backgroundColor: '#ffffff'
+    },
+    {
+      id: 'mock-2',
+      title: "Getting Started",
+      elements: [
+        {
+          id: 'elem-3',
+          type: 'text',
+          x: 50,
+          y: 50,
+          width: 700,
+          height: 100,
+          content: "Getting Started",
+          style: { fontSize: 28, fontFamily: 'Arial', color: '#333', textAlign: 'center', fontWeight: 'bold' }
+        },
+        {
+          id: 'elem-4',
+          type: 'text',
+          x: 50,
+          y: 180,
+          width: 700,
+          height: 300,
+          content: "Steps to use SlidePilot:\n\n• Load a PowerPoint file using the Open button\n• Navigate through slides using the controls\n• Chat with the AI assistant in the sidebar\n• Edit and enhance your presentation",
+          style: { fontSize: 16, fontFamily: 'Arial', color: '#666', textAlign: 'left' }
+        }
+      ],
+      backgroundColor: '#ffffff'
+    },
+    {
+      id: 'mock-3',
+      title: "AI Assistant",
+      elements: [
+        {
+          id: 'elem-5',
+          type: 'text',
+          x: 50,
+          y: 50,
+          width: 700,
+          height: 100,
+          content: "AI Assistant",
+          style: { fontSize: 28, fontFamily: 'Arial', color: '#333', textAlign: 'center', fontWeight: 'bold' }
+        },
+        {
+          id: 'elem-6',
+          type: 'text',
+          x: 50,
+          y: 180,
+          width: 500,
+          height: 250,
+          content: "The AI assistant will help you:\n\n• Edit slide content\n• Improve presentation structure\n• Generate new slides\n• Format and style elements",
+          style: { fontSize: 16, fontFamily: 'Arial', color: '#666', textAlign: 'left' }
+        },
+        {
+          id: 'elem-7',
+          type: 'image',
+          x: 580,
+          y: 200,
+          width: 150,
+          height: 150,
+          content: 'AI Assistant Illustration'
+        }
+      ],
+      backgroundColor: '#ffffff'
+    }
   ];
 
   const handleSlideChange = (index: number) => {
     setCurrentSlideIndex(index);
   };
 
-  const handleFileLoaded = (fileInfo: FileInfo) => {
+  const handleFileLoaded = async (fileInfo: FileInfo) => {
     setLoadedFile(fileInfo);
     setError(null);
     
-    // For now, create mock slides based on the loaded file
-    const mockSlidesFromFile = [
-      { title: `${fileInfo.name} - Slide 1`, content: "File loaded successfully! Slide content will be parsed in the next step." },
-      { title: `${fileInfo.name} - Slide 2`, content: "This is a placeholder for the second slide." },
-      { title: `${fileInfo.name} - Slide 3`, content: "LibreOffice integration will handle actual slide parsing." }
-    ];
-    
-    setSlides(mockSlidesFromFile);
-    setCurrentSlideIndex(0);
+    try {
+      // Parse the PowerPoint file using SlideParser
+      if (fileInfo.content) {
+        const parsedPresentation = await SlideParser.parsePowerPointFile(
+          fileInfo.content, 
+          fileInfo.name
+        );
+        setPresentation(parsedPresentation);
+        setCurrentSlideIndex(0);
+      }
+    } catch (parseError) {
+      console.error('Failed to parse presentation:', parseError);
+      setError('Failed to parse the presentation file');
+    }
   };
 
   const handleError = (errorMessage: string) => {
@@ -41,9 +135,11 @@ function App() {
     setLoadedFile(null);
   };
 
+  const currentSlides = presentation?.slides || createMockSlides();
+
   const mainContent = (
     <PresentationViewer
-      slides={slides.length > 0 ? slides : mockSlides}
+      slides={currentSlides}
       currentSlideIndex={currentSlideIndex}
       onSlideChange={handleSlideChange}
       onFileLoaded={handleFileLoaded}
@@ -61,10 +157,13 @@ function App() {
         </div>
       )}
       
-      {loadedFile && (
+      {loadedFile && presentation && (
         <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
           <p className="text-green-800 text-sm">
             <strong>Loaded:</strong> {loadedFile.name}
+          </p>
+          <p className="text-green-700 text-xs mt-1">
+            {presentation.slides.length} slides parsed
           </p>
         </div>
       )}

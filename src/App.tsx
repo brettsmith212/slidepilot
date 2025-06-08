@@ -7,13 +7,16 @@ import { FileInfo } from "./services/fileService";
 import { Slide, Presentation } from "./types/presentation";
 import { SlideParser } from "./utils/slideParser";
 import { useChat } from "./hooks/useChat";
+import { announceToScreenReader } from "./utils/accessibility";
 
 function App() {
   const [presentation, setPresentation] = useState<Presentation | null>(null);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [loadedFile, setLoadedFile] = useState<FileInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const chatInterfaceRef = useRef<ChatInterfaceRef>(null);
+  const chatInputRef = useRef<HTMLInputElement>(null);
 
   // Mock data for testing - moved up before usage
   const createMockSlides = (): Slide[] => [
@@ -117,20 +120,38 @@ function App() {
       if (slideIndex >= 0 && slideIndex < currentSlides.length) {
         setCurrentSlideIndex(slideIndex);
         addSystemMessage(`Navigated to slide ${slideIndex + 1}`);
+        announceToScreenReader(`Navigated to slide ${slideIndex + 1}`);
       }
     },
     onEditSlide: (slideIndex: number, elementId: string, changes: any) => {
       addSystemMessage(`Applied edit to ${elementId} on slide ${slideIndex + 1}`);
+      announceToScreenReader(`Edit applied to slide ${slideIndex + 1}`);
       // In a real implementation, this would update the slide data
     },
     onFormatSlide: (slideIndex: number, elementId: string, changes: any) => {
       addSystemMessage(`Applied formatting changes to slide ${slideIndex + 1}`);
+      announceToScreenReader(`Formatting applied to slide ${slideIndex + 1}`);
       // In a real implementation, this would update the slide formatting
     },
     currentSlideIndex,
     totalSlides: currentSlides.length,
     hasPresentation: !!presentation
   });
+
+  const handleToggleSidebar = () => {
+    setIsSidebarVisible(prev => {
+      const newValue = !prev;
+      announceToScreenReader(newValue ? 'Sidebar opened' : 'Sidebar closed');
+      return newValue;
+    });
+  };
+
+  const handleFocusChat = () => {
+    if (chatInputRef.current) {
+      chatInputRef.current.focus();
+      announceToScreenReader('Chat input focused');
+    }
+  };
 
   const handleSlideChange = (index: number) => {
     setCurrentSlideIndex(index);
@@ -139,6 +160,7 @@ function App() {
   const handleFileLoaded = async (fileInfo: FileInfo) => {
     setLoadedFile(fileInfo);
     setError(null);
+    announceToScreenReader(`Loading presentation: ${fileInfo.name}`);
     
     try {
       // Parse the PowerPoint file using SlideParser
@@ -149,10 +171,12 @@ function App() {
         );
         setPresentation(parsedPresentation);
         setCurrentSlideIndex(0);
+        announceToScreenReader(`Presentation loaded successfully. ${parsedPresentation.slides.length} slides available.`);
       }
     } catch (parseError) {
       console.error('Failed to parse presentation:', parseError);
       setError('Failed to parse the presentation file');
+      announceToScreenReader('Failed to load presentation file');
     }
   };
 
@@ -168,6 +192,8 @@ function App() {
       onSlideChange={handleSlideChange}
       onFileLoaded={handleFileLoaded}
       onError={handleError}
+      onToggleSidebar={handleToggleSidebar}
+      onFocusChat={handleFocusChat}
     />
   );
 
@@ -291,6 +317,7 @@ function App() {
               }
             }} className="flex gap-2">
               <input
+                ref={chatInputRef}
                 name="message"
                 type="text"
                 placeholder="Ask me to edit slides, navigate, or analyze your presentation..."
@@ -316,7 +343,7 @@ function App() {
   );
 
   return (
-    <MainLayout sidebar={sidebarContent}>
+    <MainLayout sidebar={isSidebarVisible ? sidebarContent : null}>
       {mainContent}
     </MainLayout>
   );

@@ -105,7 +105,7 @@
 
 ## Phase 5: Integration and Polish
 
-- [ ] Step 10: Connect Presentation Viewer with File Loading
+- [x] Step 10: Connect Presentation Viewer with File Loading (Combined with Steps 8-9)
 
   - **Task**: Integrate file loading with the presentation viewer to display loaded files
   - **Description**: Complete the connection between file opening and presentation display, handling loading states and errors
@@ -116,7 +116,7 @@
   - **Step Dependencies**: Step 7, Step 6
   - **User Instructions**: Test complete file opening workflow
 
-- [ ] Step 11: Add Keyboard Shortcuts and Accessibility
+- [x] Step 11: Add Keyboard Shortcuts and Accessibility
 
   - **Task**: Implement keyboard navigation and accessibility features
   - **Description**: Add keyboard shortcuts for common actions and ensure the application is accessible

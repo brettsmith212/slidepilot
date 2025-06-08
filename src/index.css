@@ -4,6 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import component-specific styles */
+@import './styles/components.css';
+
 /* Base styles */
 * {
   box-sizing: border-box;

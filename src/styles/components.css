@@ -1,0 +1,373 @@
+/* Component-specific styles for SlidePilot */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus styles for accessibility */
+.focus-visible:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for reduced motion users */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .bg-gray-50 {
+    background-color: #ffffff;
+    border: 1px solid #000000;
+  }
+  
+  .text-gray-600 {
+    color: #000000;
+  }
+  
+  .border-gray-200 {
+    border-color: #000000;
+  }
+}
+
+/* Presentation Viewer Specific Styles */
+.presentation-viewer {
+  @apply flex flex-col h-full bg-gray-50;
+}
+
+.slide-container {
+  @apply relative bg-white shadow-lg rounded-lg border border-gray-200;
+  aspect-ratio: 4/3;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.slide-container:focus {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+}
+
+/* Responsive slide container */
+@media (max-width: 768px) {
+  .slide-container {
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* Chat Interface Styles */
+.chat-message {
+  @apply flex gap-3 mb-3;
+}
+
+.chat-message-user {
+  @apply flex-row-reverse;
+}
+
+.chat-message-content {
+  @apply max-w-[80%] p-3 rounded-lg border;
+}
+
+.chat-message-user .chat-message-content {
+  @apply bg-blue-600 text-white border-blue-600;
+}
+
+.chat-message-ai .chat-message-content {
+  @apply bg-white border-gray-200;
+}
+
+.chat-message-system .chat-message-content {
+  @apply bg-blue-50 border-blue-200 text-blue-800;
+}
+
+.chat-message-error .chat-message-content {
+  @apply bg-red-50 border-red-200 text-red-800;
+}
+
+/* Typing indicator animation */
+.typing-dot {
+  @apply w-2 h-2 bg-blue-400 rounded-full animate-bounce;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+/* Button hover effects */
+.btn-primary {
+  @apply px-4 py-2 bg-blue-600 text-white rounded-md font-medium transition-colors duration-200;
+}
+
+.btn-primary:hover:not(:disabled) {
+  @apply bg-blue-700;
+}
+
+.btn-primary:focus {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+}
+
+.btn-primary:disabled {
+  @apply bg-gray-300 cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply px-4 py-2 bg-gray-100 text-gray-700 rounded-md font-medium transition-colors duration-200;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  @apply bg-gray-200;
+}
+
+.btn-secondary:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Icon buttons */
+.btn-icon {
+  @apply p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors duration-200;
+}
+
+.btn-icon:focus {
+  @apply ring-2 ring-blue-500 ring-offset-1;
+}
+
+.btn-icon.active {
+  @apply text-blue-600 bg-blue-50;
+}
+
+/* File upload area */
+.file-upload-area {
+  @apply border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-colors duration-200;
+}
+
+.file-upload-area:hover {
+  @apply border-gray-400 bg-gray-50;
+}
+
+.file-upload-area.dragover {
+  @apply border-blue-500 bg-blue-50;
+}
+
+/* Slide navigation thumbnails */
+.slide-thumbnail {
+  @apply w-20 h-15 bg-gray-100 border-2 rounded-md hover:bg-gray-200 transition-colors duration-200 cursor-pointer;
+}
+
+.slide-thumbnail.active {
+  @apply border-blue-500 bg-blue-50;
+}
+
+.slide-thumbnail:focus {
+  @apply ring-2 ring-blue-500 ring-offset-1;
+}
+
+/* Modal styles */
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-content {
+  @apply bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto;
+}
+
+.modal-header {
+  @apply flex justify-between items-center p-6 border-b border-gray-200;
+}
+
+.modal-body {
+  @apply p-6;
+}
+
+/* Loading states */
+.loading-spinner {
+  @apply animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent;
+}
+
+.loading-skeleton {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .presentation-viewer {
+    @apply text-sm;
+  }
+  
+  .slide-container {
+    margin: 0.5rem;
+  }
+  
+  .chat-message-content {
+    @apply max-w-[90%] p-2 text-sm;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    @apply px-3 py-1.5 text-sm;
+  }
+  
+  .modal-content {
+    @apply mx-2 max-h-[90vh];
+  }
+}
+
+@media (max-width: 480px) {
+  .slide-thumbnail {
+    @apply w-16 h-12;
+  }
+  
+  .chat-message {
+    @apply gap-2 mb-2;
+  }
+  
+  .presentation-viewer {
+    @apply text-xs;
+  }
+}
+
+/* Dark mode support (for future implementation) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1f2937;
+    --bg-secondary: #374151;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --border-color: #4b5563;
+  }
+}
+
+/* Print styles */
+@media print {
+  .chat-interface,
+  .slide-navigation,
+  .viewer-controls {
+    display: none !important;
+  }
+  
+  .slide-container {
+    @apply shadow-none border-none;
+    width: 100% !important;
+    height: auto !important;
+  }
+  
+  .presentation-viewer {
+    @apply bg-white;
+  }
+}
+
+/* Animation classes */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Utilities for consistent spacing */
+.section-spacing {
+  @apply py-6;
+}
+
+.component-spacing {
+  @apply mb-4;
+}
+
+.tight-spacing {
+  @apply mb-2;
+}
+
+/* Status indicators */
+.status-indicator {
+  @apply w-2 h-2 rounded-full;
+}
+
+.status-online {
+  @apply bg-green-500;
+}
+
+.status-offline {
+  @apply bg-red-500;
+}
+
+.status-loading {
+  @apply bg-yellow-500 animate-pulse;
+}
+
+/* Accessibility improvements */
+.skip-link {
+  @apply absolute -top-10 left-0 bg-blue-600 text-white px-4 py-2 rounded-md z-50;
+  transform: translateY(-100%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* Improved focus indicators */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+.focus-ring-inset {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset;
+}

@@ -139,7 +139,7 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
       />
       
       <div 
-        className="flex-1 flex items-center justify-center p-4 overflow-hidden"
+        className="flex-1 flex items-center justify-center p-2 sm:p-4 overflow-hidden"
         role="region"
         aria-label="Slide content"
         aria-live="polite"
@@ -147,10 +147,12 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
       >
         {currentSlide ? (
           <div 
-            className="shadow-lg rounded-lg overflow-hidden"
+            className="shadow-lg rounded-lg overflow-hidden max-w-full max-h-full"
             style={{
               transform: `scale(${fitToWidth ? 1 : zoomLevel / 100})`,
-              transformOrigin: 'center center'
+              transformOrigin: 'center center',
+              width: 'min(800px, 90vw)',
+              height: 'min(600px, 60vh)'
             }}
             role="img"
             aria-label={getSlideAriaLabel(currentSlideIndex, slides.length, currentSlide.title)}
@@ -160,6 +162,7 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
               slide={currentSlide}
               width={800}
               height={600}
+              className="w-full h-full"
             />
           </div>
         ) : (
